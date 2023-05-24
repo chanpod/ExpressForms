@@ -51,7 +51,9 @@ export default function NotesPage() {
                     }
                     to={note.id}
                   >
-                    📝 {note.name}
+                    <span>📝 {note.name}</span>
+                    <br />
+                    <span>Completed: {note.completed ? "Yes" : "No"}</span>
                   </NavLink>
                 </li>
               ))}

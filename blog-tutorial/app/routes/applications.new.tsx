@@ -1,4 +1,3 @@
-import { Application } from "@prisma/client";
 import type { ActionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
@@ -7,18 +6,19 @@ import {
   ApplicationsForm,
 } from "~/components/ApplicationsForm";
 import { createApplication } from "~/models/application.server";
+import { ApplicationsService } from "~/services/Applications.service";
+import { ApplicationForm } from "~/types/Application";
 
 export const action = async ({ request }: ActionArgs) => {
-  const formData = await request.formData();
+  const applicationService = new ApplicationsService();
 
-  const application: Partial<Application> = {
-    name: formData.get("name") as string,
-    firstName: formData.get("firstName") as string,
-    lastName: formData.get("lastName") as string,
-  };
+  const application: Partial<ApplicationForm> =
+    await applicationService.extractFormData(request);
 
-  if (typeof application.name !== "string" || application.name?.length === 0) {
-    return json({ errors: { name: "Name is required" } }, { status: 400 });
+  const errors = applicationService.validateApplicationForm(application);
+
+  if (errors) {
+    return json({ errors: errors }, { status: 400 });
   }
 
   const newApplication = await createApplication(application);

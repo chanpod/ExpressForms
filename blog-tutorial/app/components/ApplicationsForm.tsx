@@ -2,18 +2,20 @@ import { Address, Application, Vehicle } from "@prisma/client";
 import { Form } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import Input from "~/components/Input";
+import { ApplicationForm } from "~/types/Application";
 
 export interface ApplicationActionErrors {
   name?: string;
   firstName?: string;
   lastName?: string;
+  dob?: string;
   vehicles?: Vehicle[];
   address?: Address;
 }
 
 interface Props {
   errors?: ApplicationActionErrors;
-  application?: Application;
+  application?: ApplicationForm;
 }
 
 export const ApplicationsForm = ({ application, errors }: Props) => {
@@ -21,6 +23,11 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
   const nameRef = useRef<HTMLInputElement>(null);
   const firstNameRef = useRef<HTMLTextAreaElement>(null);
   const lastNameRef = useRef<HTMLTextAreaElement>(null);
+  const dobRef = useRef<HTMLTextAreaElement>(null);
+  const cityRef = useRef<HTMLTextAreaElement>(null);
+  const stateRef = useRef<HTMLTextAreaElement>(null);
+  const zipRef = useRef<HTMLTextAreaElement>(null);
+  const streetRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (application !== undefined) {
@@ -35,12 +42,22 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
       firstNameRef.current?.focus();
     } else if (errors?.lastName) {
       lastNameRef.current?.focus();
+    } else if (errors?.dob) {
+      dobRef.current?.focus();
+    } else if (errors?.address?.city) {
+      cityRef.current?.focus();
+    } else if (errors?.address?.state) {
+      stateRef.current?.focus();
+    } else if (errors?.address?.zip) {
+      zipRef.current?.focus();
+    } else if (errors?.address?.street) {
+      streetRef.current?.focus();
     }
   }, [errors]);
 
   return (
     <Form
-      method="post"
+      method={application ? "PUT" : "POST"}
       ref={formRef}
       style={{
         display: "flex",
@@ -67,6 +84,7 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
           name="firstName"
           errors={errors?.firstName !== undefined}
           errorMessage={errors?.firstName}
+          defaultValue={application?.firstName}
         />
       </div>
       <div>
@@ -76,6 +94,54 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
           name="lastName"
           errors={errors?.lastName !== undefined}
           errorMessage={errors?.lastName}
+          defaultValue={application?.lastName}
+        />
+      </div>
+
+      <div>
+        <Input
+          label="Date of Birth"
+          ref={dobRef}
+          name="dob"
+          errors={errors?.dob !== undefined}
+          errorMessage={errors?.dob}
+          defaultValue={application?.dob}
+        />
+      </div>
+
+      <div>
+        <Input
+          label="City"
+          ref={cityRef}
+          name="city"
+          errors={errors?.address?.city !== undefined}
+          errorMessage={errors?.address?.city}
+          defaultValue={application?.address?.city}
+        />
+
+        <Input
+          label="State"
+          ref={stateRef}
+          name="state"
+          errors={errors?.address?.state !== undefined}
+          errorMessage={errors?.address?.state}
+          defaultValue={application?.address?.state}
+        />
+
+        <Input
+          label="Zip"
+          ref={zipRef}
+          name="zip"
+          errors={errors?.address?.zip !== undefined}
+          errorMessage={errors?.address?.zip}
+        />
+
+        <Input
+          label="Street"
+          ref={streetRef}
+          name="street"
+          errors={errors?.address?.street !== undefined}
+          errorMessage={errors?.address?.street}
         />
       </div>
 

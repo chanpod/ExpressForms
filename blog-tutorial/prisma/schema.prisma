@@ -13,7 +13,7 @@ model Address {
   city   String
   state  String
   zip    String
-
+  dob    String
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   applicationId String      @unique
 }

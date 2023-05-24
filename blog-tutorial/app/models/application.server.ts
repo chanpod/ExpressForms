@@ -1,15 +1,15 @@
-import { Application } from "@prisma/client";
 import { prisma } from "~/db.server";
+import { ApplicationForm } from "~/types/Application";
 
 export function getApplications() {
   return prisma.application.findMany({
-    select: { id: true, name: true },
+    select: { id: true, name: true, completed: true },
     orderBy: { updatedAt: "desc" },
   });
 }
 
-export function createApplication(application: Partial<Application>) {
-  return prisma.application.create({ data: application as Application });
+export function createApplication(application: Partial<ApplicationForm>) {
+  return prisma.application.create({ data: application as ApplicationForm });
 }
 
 export function getApplication({ applicationId }: { applicationId: string }) {
