@@ -20,4 +20,4 @@ Primarily want to look under app. Important Directories are components, models, 
 
 ### Connecting to your database
 
-The sqlite database lives at `/data/sqlite.db` in your deployed application. You can connect to the live database by running `fly ssh console -C database-cli`.
+It's a local sqlite db. The setup should initialize this for you. Should only need to run the app.
