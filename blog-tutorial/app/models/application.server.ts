@@ -2,7 +2,7 @@ import { Vehicle } from "@prisma/client";
 import { filter, map } from "lodash";
 import { v } from "vitest/dist/types-e3c9754d";
 import { prisma } from "~/db.server";
-import { ApplicationForm, RemoveVehicle } from "~/types/Application";
+import { ApplicationData, ApplicationForm, RemoveVehicle } from "~/types/Application";
 
 export function getApplications() {
   return prisma.application.findMany({
@@ -11,7 +11,7 @@ export function getApplications() {
   });
 }
 
-export function createApplication(application: ApplicationForm) {
+export function createApplication(application: ApplicationData) {
   return prisma.application.create({
     data: {
       name: application.name,

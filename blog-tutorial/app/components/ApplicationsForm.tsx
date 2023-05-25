@@ -1,10 +1,11 @@
 import { Address, Application, Vehicle } from "@prisma/client";
 import { Form, useFetcher, useSubmit } from "@remix-run/react";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import Input from "~/components/Input";
 import { ApplicationForm, RemoveVehicle } from "~/types/Application";
 import { VehicleForm } from "./VehicleForm";
 import { filter, findIndex, map, replace } from "lodash";
+import PersonForm from "./PersonForm";
 
 export interface ApplicationActionErrors {
   name?: string;
@@ -21,13 +22,7 @@ interface Props {
 }
 
 export const ApplicationsForm = ({ application, errors }: Props) => {
-  const submitter = useFetcher();
-
-  const formRef = useRef<HTMLFormElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
-  const firstNameRef = useRef<HTMLTextAreaElement>(null);
-  const lastNameRef = useRef<HTMLTextAreaElement>(null);
-  const dobRef = useRef<HTMLTextAreaElement>(null);
   const cityRef = useRef<HTMLTextAreaElement>(null);
   const stateRef = useRef<HTMLTextAreaElement>(null);
   const zipRef = useRef<HTMLTextAreaElement>(null);
@@ -38,20 +33,8 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
   );
 
   useEffect(() => {
-    if (application !== undefined) {
-      formRef.current?.reset();
-    }
-  }, []);
-
-  useEffect(() => {
     if (errors?.name) {
       nameRef.current?.focus();
-    } else if (errors?.firstName) {
-      firstNameRef.current?.focus();
-    } else if (errors?.lastName) {
-      lastNameRef.current?.focus();
-    } else if (errors?.dob) {
-      dobRef.current?.focus();
     } else if (errors?.address?.city) {
       cityRef.current?.focus();
     } else if (errors?.address?.state) {
@@ -92,28 +75,6 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
     }
   }
 
-  function submit(formEvent: React.FormEvent<HTMLFormElement>) {
-    formEvent.preventDefault();
-    const newApplication: Partial<ApplicationForm> = {
-      name: nameRef.current?.value!,
-      firstName: firstNameRef.current?.value!,
-      lastName: lastNameRef.current?.value!,
-      dob: dobRef.current?.value!,
-      city: cityRef.current?.value!,
-      state: stateRef.current?.value!,
-      zip: zipRef.current?.value!,
-      street: streetRef.current?.value!,
-      vehicles: JSON.stringify(vehicles),
-    };
-
-    submitter.submit(
-      { ...newApplication },
-      {
-        method: application ? "PUT" : "POST",
-      }
-    );
-  }
-
   function updateVehicle(vehicle: Partial<Vehicle>) {
     const index = findIndex(vehicles, (v) => v.id === vehicle.id);
     const newVehicles = [...vehicles];
@@ -122,58 +83,20 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
   }
 
   return (
-    <Form
-      method={application ? "PUT" : "POST"}
-      ref={formRef}
-      onSubmit={submit}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        width: "100%",
-      }}
-    >
+    <>
       <div>
         <Input
           label="Name"
           ref={nameRef}
           name="name"
           errors={errors?.name !== undefined}
-          errorMessage={errors?.name}
+          errorMessage={errors?.name as string}
           defaultValue={application?.name}
         />
       </div>
-      <div className="flex flex-row space-x-3">
-        <div>
-          <Input
-            label="First Name"
-            ref={firstNameRef}
-            name="firstName"
-            errors={errors?.firstName !== undefined}
-            errorMessage={errors?.firstName}
-            defaultValue={application?.firstName}
-          />
-        </div>
-        <div>
-          <Input
-            label="Last Name"
-            ref={lastNameRef}
-            name="lastName"
-            errors={errors?.lastName !== undefined}
-            errorMessage={errors?.lastName}
-            defaultValue={application?.lastName}
-          />
-        </div>
-      </div>
-      <div style={{ maxWidth: "250px" }}>
-        <Input
-          label="Date of Birth"
-          ref={dobRef}
-          name="dob"
-          errors={errors?.dob !== undefined}
-          errorMessage={errors?.dob}
-          defaultValue={application?.dob}
-        />
+ 
+      <div>
+        <PersonForm errors={errors} application={application} />
       </div>
 
       <div className="flex flex-row space-x-3">
@@ -227,18 +150,11 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
             />
           )
         )}
+
+        <input name="vehicles" type="hidden" value={JSON.stringify(vehicles)} />
       </div>
 
       <VehicleForm addVehicle={addVehicle} />
-
-      <div className="text-right">
-        <button
-          type="submit"
-          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-        >
-          Save
-        </button>
-      </div>
-    </Form>
+    </>
   );
 };

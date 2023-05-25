@@ -1,21 +1,25 @@
 import type { ActionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
+import { Form, useActionData, useFetcher } from "@remix-run/react";
+import { useRef } from "react";
 import {
   ApplicationActionErrors,
   ApplicationsForm,
 } from "~/components/ApplicationsForm";
 import { createApplication } from "~/models/application.server";
-import { ApplicationsService } from "~/services/Applications.service";
+import { ApplicationFormService } from "~/services/ApplicationForm.service";
+import { ApplicationValidationService } from "~/services/ApplicationValidation.service";
 import { ApplicationForm } from "~/types/Application";
 
 export const action = async ({ request }: ActionArgs) => {
-  const applicationService = new ApplicationsService();
+  const applicationValidationService = new ApplicationValidationService();
+  const applicationFormService = new ApplicationFormService();
 
-  const application: Partial<ApplicationForm> =
-    await applicationService.extractFormData(request);
+  const formData = await request.formData();
+  const application = applicationFormService.extractFormData(formData);
 
-  const errors = applicationService.validateApplicationForm(application);
+  const errors =
+    applicationValidationService.validateApplicationForm(application);
 
   if (errors) {
     return json({ errors: errors }, { status: 400 });
@@ -28,6 +32,41 @@ export const action = async ({ request }: ActionArgs) => {
 
 export default function NewNotePage() {
   const actionData = useActionData<{ errors: ApplicationActionErrors }>();
+  const formRef = useRef();
+  const submitter = useFetcher();
 
-  return <ApplicationsForm errors={actionData?.errors} />;
+  function submit(formEvent: React.FormEvent<HTMLFormElement>) {
+    formEvent.preventDefault();
+    const form = new FormData(formRef.current!);
+    console.log(form.get("name"));
+    const applicationService = new ApplicationFormService();
+    const newApplication: Partial<ApplicationForm> =
+      applicationService.buildFormData(form);
+
+    submitter.submit(
+      { ...newApplication },
+      {
+        method: "POST",
+      }
+    );
+  }
+
+  return (
+    <>
+      <Form
+        ref={formRef}
+        onSubmit={submit}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+        }}
+      >
+        <ApplicationsForm errors={submitter.data?.errors} />
+        <button type="submit" onClick={submit}>
+          Save
+        </button>
+      </Form>
+    </>
+  );
 }

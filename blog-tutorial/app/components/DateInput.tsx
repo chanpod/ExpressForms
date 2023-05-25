@@ -1,16 +1,16 @@
-import React, { RefObject, forwardRef } from "react";
+import React, { forwardRef } from "react";
 
 interface Props {
   errors: boolean;
   errorMessage: string;
   label: string;
   name: string;
-  defaultValue?: string | null;
+  defaultValue?: string | number | readonly string[] | undefined;
   onChange?: (event: React.ChangeEvent) => void;
   type?: string;
 }
 
-const Input = forwardRef(
+const DateInput = forwardRef(
   (
     { label, errors, errorMessage, name, defaultValue, type, onChange }: Props,
     ref
@@ -20,8 +20,7 @@ const Input = forwardRef(
         <label className="flex w-full flex-col gap-1">
           <span>{label} </span>
           <input
-            ref={ref}
-            type={type ?? "text"}
+            type="date"
             defaultValue={defaultValue}
             name={name}
             onChange={onChange}
@@ -40,6 +39,6 @@ const Input = forwardRef(
   }
 );
 
-Input.displayName = "Input";
+DateInput.displayName = "DateInput";
 
-export default Input;
+export default DateInput;

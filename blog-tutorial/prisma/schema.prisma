@@ -39,7 +39,7 @@ model Application {
   lastName  String?
   dob       String?
 
-  completed Boolean @default(false)
+  completed Boolean? @default(false)
 
   vehicles Vehicle[]
   address  Address?
