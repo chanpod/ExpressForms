@@ -10,7 +10,7 @@ import { ApplicationForm } from "~/types/Application";
 
 /**
  * Actions are a lumping of everything but GET. This includes POST, PUT, PATCH, DELETE.
- * In this particular rout
+ * In this particular route we just care about a POST.
  *
  */
 export const action = async ({ request }: ActionArgs) => {

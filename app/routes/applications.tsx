@@ -1,9 +1,7 @@
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import { getApplications } from "~/models/application.server";
-
-import { useOptionalUser } from "~/utils";
 
 //Loaders are GETs that happen on the server. They are used to fetch data for the page.
 export const loader = async ({ request }: LoaderArgs) => {
@@ -13,14 +11,13 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export default function NotesPage() {
   const data = useLoaderData<typeof loader>();
-  const user = useOptionalUser();
 
   return (
     <div className="flex h-full min-h-screen flex-col">
       <header className="flex items-center justify-between bg-slate-800 p-4 text-white">
         <h1 className="text-3xl font-bold">
           <Link to=".">Applications</Link>
-        </h1>   
+        </h1>
       </header>
 
       <main className="flex h-full bg-white">
