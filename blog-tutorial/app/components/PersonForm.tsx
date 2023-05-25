@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
 import Input from "./Input";
 
-import { ApplicationActionErrors, ApplicationForm } from "~/types/Application";
+import { ApplicationActionErrors, ApplicationData, ApplicationForm } from "~/types/Application";
 import DateInput from "./DateInput";
 
 interface Props {
   errors?: ApplicationActionErrors;
-  application?: ApplicationForm;
+  application?: ApplicationData;
 }
 
 const PersonForm = ({ errors, application }: Props) => {
@@ -56,7 +56,7 @@ const PersonForm = ({ errors, application }: Props) => {
           type="date"
           errors={errors?.dob !== undefined}
           errorMessage={errors?.dob as string}
-          defaultValue={application?.dob}
+          defaultValue={application?.dob as string}
         />
       </div>
     </div>

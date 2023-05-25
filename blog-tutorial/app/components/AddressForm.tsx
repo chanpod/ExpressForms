@@ -1,11 +1,10 @@
-import React, { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Input from "./Input";
-
-import { ApplicationActionErrors, ApplicationForm } from "~/types/Application";
+import { ApplicationActionErrors, ApplicationData } from "~/types/Application";
 
 interface Props {
   errors?: ApplicationActionErrors;
-  application?: ApplicationForm;
+  application?: ApplicationData;
 }
 
 const AddressForm = ({ errors, application }: Props) => {
@@ -14,6 +13,18 @@ const AddressForm = ({ errors, application }: Props) => {
   const zipRef = useRef<HTMLTextAreaElement>(null);
   const streetRef = useRef<HTMLTextAreaElement>(null);
 
+  useEffect(() => {
+    if (errors?.address?.city) {
+      cityRef.current?.focus();
+    } else if (errors?.address?.state) {
+      stateRef.current?.focus();
+    } else if (errors?.address?.zip) {
+      zipRef.current?.focus();
+    } else if (errors?.address?.street) {
+      streetRef.current?.focus();
+    }
+  }, [errors]);
+
   return (
     <div className="flex flex-row space-x-3">
       <Input
@@ -21,7 +32,7 @@ const AddressForm = ({ errors, application }: Props) => {
         ref={streetRef}
         name="street"
         errors={errors?.address?.street !== undefined}
-        errorMessage={errors?.address?.street}
+        errorMessage={errors?.address?.street as string}
         defaultValue={application?.address?.street}
       />
 
@@ -30,7 +41,7 @@ const AddressForm = ({ errors, application }: Props) => {
         ref={cityRef}
         name="city"
         errors={errors?.address?.city !== undefined}
-        errorMessage={errors?.address?.city}
+        errorMessage={errors?.address?.city as string}
         defaultValue={application?.address?.city}
       />
 
@@ -39,7 +50,7 @@ const AddressForm = ({ errors, application }: Props) => {
         ref={stateRef}
         name="state"
         errors={errors?.address?.state !== undefined}
-        errorMessage={errors?.address?.state}
+        errorMessage={errors?.address?.state as string}
         defaultValue={application?.address?.state}
       />
 
@@ -48,7 +59,7 @@ const AddressForm = ({ errors, application }: Props) => {
         ref={zipRef}
         name="zip"
         errors={errors?.address?.zip !== undefined}
-        errorMessage={errors?.address?.zip}
+        errorMessage={errors?.address?.zip as string}
         defaultValue={application?.address?.zip}
       />
     </div>

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Input from "~/components/Input";
 import {
   ApplicationActionErrors,
-  ApplicationForm,
+  ApplicationData,
   RemoveVehicle,
 } from "~/types/Application";
 import AddressForm from "./AddressForm";
@@ -13,15 +13,11 @@ import { VehicleForm } from "./VehicleForm";
 
 interface Props {
   errors?: ApplicationActionErrors;
-  application?: ApplicationForm;
+  application?: ApplicationData;
 }
 
 export const ApplicationsForm = ({ application, errors }: Props) => {
   const nameRef = useRef<HTMLInputElement>(null);
-  const cityRef = useRef<HTMLTextAreaElement>(null);
-  const stateRef = useRef<HTMLTextAreaElement>(null);
-  const zipRef = useRef<HTMLTextAreaElement>(null);
-  const streetRef = useRef<HTMLTextAreaElement>(null);
 
   const [vehicles, setVehicles] = useState<Partial<Vehicle>[]>(
     application?.vehicles ?? []
@@ -30,14 +26,6 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
   useEffect(() => {
     if (errors?.name) {
       nameRef.current?.focus();
-    } else if (errors?.address?.city) {
-      cityRef.current?.focus();
-    } else if (errors?.address?.state) {
-      stateRef.current?.focus();
-    } else if (errors?.address?.zip) {
-      zipRef.current?.focus();
-    } else if (errors?.address?.street) {
-      streetRef.current?.focus();
     }
   }, [errors]);
 

@@ -1,8 +1,7 @@
 import { Vehicle } from "@prisma/client";
 import { filter, map } from "lodash";
-import { v } from "vitest/dist/types-e3c9754d";
 import { prisma } from "~/db.server";
-import { ApplicationData, ApplicationForm, RemoveVehicle } from "~/types/Application";
+import { ApplicationData, RemoveVehicle } from "~/types/Application";
 
 export function getApplications() {
   return prisma.application.findMany({
@@ -39,12 +38,12 @@ export function updateApplication({
   application,
 }: {
   applicationId: string;
-  application: ApplicationForm;
+  application: ApplicationData;
 }) {
   const vehiclesToUpdate = filter(
     application.vehicles as Vehicle[],
     (vehicle: Vehicle) => {
-      return vehicle.id && vehicle.remove !== true;
+      return vehicle.id && (vehicle as RemoveVehicle).remove !== true;
     }
   );
   const vehiclesToCreate = filter(

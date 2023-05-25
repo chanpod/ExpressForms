@@ -5,6 +5,7 @@ import { getApplications } from "~/models/application.server";
 
 import { useOptionalUser } from "~/utils";
 
+//Loaders are GETs that happen on the server. They are used to fetch data for the page.
 export const loader = async ({ request }: LoaderArgs) => {
   const applications = await getApplications();
   return json({ applications });
