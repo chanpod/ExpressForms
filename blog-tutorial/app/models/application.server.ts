@@ -1,4 +1,5 @@
-import { map } from "lodash";
+import { Vehicle } from "@prisma/client";
+import { filter, map } from "lodash";
 import { v } from "vitest/dist/types-e3c9754d";
 import { prisma } from "~/db.server";
 import { ApplicationForm } from "~/types/Application";
@@ -26,14 +27,7 @@ export function createApplication(application: ApplicationForm) {
         },
       },
       vehicles: {
-        create: map(application.vehicles, (vehicle: Vehicle) => {
-          return {
-            make: vehicle.make,
-            model: vehicle.model,
-            year: vehicle.year,
-            vin: vehicle.vin,
-          };
-        }),
+        create: application.vehicles as Vehicle[],
       },
     },
   });
@@ -46,6 +40,12 @@ export function updateApplication({
   applicationId: string;
   application: ApplicationForm;
 }) {
+  const vehiclesToUpdate = filter(application.vehicles as Vehicle[], (vehicle: Vehicle) => {
+    return vehicle.id;
+  });
+  const vehiclesToCreate = filter(application.vehicles as Vehicle[], (vehicle: Vehicle) => {
+    return !vehicle.id;
+  });
   return prisma.application.update({
     where: { id: applicationId },
     data: {
@@ -62,10 +62,18 @@ export function updateApplication({
         },
       },
       vehicles: {
-        updateMany: {
-          where: { applicationId },
-          data: application.vehicles,
-        },
+        update: map(vehiclesToUpdate as Vehicle[], (vehicle: Vehicle) => {
+          return {
+            where: { id: vehicle.id },
+            data: {
+              make: vehicle.make,
+              model: vehicle.model,
+              year: vehicle.year,
+              vin: vehicle.vin,
+            },
+          };
+        }),
+        create: vehiclesToCreate ? (vehiclesToCreate as Vehicle[]) : undefined,
       },
     },
   });

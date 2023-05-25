@@ -33,7 +33,7 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
   const zipRef = useRef<HTMLTextAreaElement>(null);
   const streetRef = useRef<HTMLTextAreaElement>(null);
 
-  const [vehicles, setVehicles] = useState<Partial<Vehicle>[]>([]);
+  const [vehicles, setVehicles] = useState<Partial<Vehicle>[]>(application?.vehicles ?? []);
 
   useEffect(() => {
     if (application !== undefined) {
@@ -92,7 +92,7 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
   }
 
   function updateVehicle(vehicle: Partial<Vehicle>) {
-    const index = findIndex(vehicles, (v) => v.vin === vehicle.vin);
+    const index = findIndex(vehicles, (v) => v.id === vehicle.id);
     const newVehicles = [...vehicles];
     newVehicles[index] = vehicle;
     setVehicles(newVehicles);

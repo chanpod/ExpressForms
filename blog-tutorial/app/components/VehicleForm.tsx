@@ -32,15 +32,17 @@ export const VehicleForm = ({
 
   function updateParentVehicle() {
     console.log("Updating parent with new text values");
-    const vehicle: Partial<Vehicle> = {
+    const newVehicle: Partial<Vehicle> = {
       make: makeRef.current?.value!,
       model: modelRef.current?.value!,
       year: parseInt(yearRef.current?.value!),
       vin: vinRef.current?.value!,
+      id: vehicle?.id,
+      applicationId: vehicle?.applicationId,
     };
 
     if (updateVehicle) {
-      updateVehicle(vehicle);
+      updateVehicle(newVehicle);
     }
   }
 
@@ -82,6 +84,7 @@ export const VehicleForm = ({
             defaultValue={vehicle?.model}
             errors={hasErrors?.model !== undefined}
             errorMessage={hasErrors?.model!}
+            onChange={updateParentVehicle}
           />
           <Input
             label="Year"
@@ -90,6 +93,7 @@ export const VehicleForm = ({
             defaultValue={vehicle?.year}
             errors={hasErrors?.year !== undefined}
             errorMessage={hasErrors?.year?.toString() as string}
+            onChange={updateParentVehicle}
           />
           <Input
             label="VIN"
@@ -98,8 +102,11 @@ export const VehicleForm = ({
             defaultValue={vehicle?.vin}
             errors={hasErrors?.vin !== undefined}
             errorMessage={hasErrors?.vin!}
+            onChange={updateParentVehicle}
           />
         </p>
+
+        {editingVehicle && <button type = "button">Delete</button>}
       </div>
       <div className="px-6 pb-2 pt-4">
         {!editingVehicle && (

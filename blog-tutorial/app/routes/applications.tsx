@@ -3,7 +3,7 @@ import { json } from "@remix-run/node";
 import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import { getApplications } from "~/models/application.server";
 
-import { useUser } from "~/utils";
+import { useOptionalUser } from "~/utils";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const applications = await getApplications();
@@ -12,7 +12,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export default function NotesPage() {
   const data = useLoaderData<typeof loader>();
-  const user = useUser();
+  const user = useOptionalUser();
 
   return (
     <div className="flex h-full min-h-screen flex-col">
@@ -20,7 +20,7 @@ export default function NotesPage() {
         <h1 className="text-3xl font-bold">
           <Link to=".">Applications</Link>
         </h1>
-        <p>{user.email}</p>
+        <p>{user?.email}</p>
         <Form action="/logout" method="post">
           <button
             type="submit"
