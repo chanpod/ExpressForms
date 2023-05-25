@@ -146,6 +146,7 @@ export default function ApplicationDetailsPage() {
 
               <div>
                 <button
+                  type="button"
                   className="rounded bg-red-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
                   onClick={deleteForm}
                 >

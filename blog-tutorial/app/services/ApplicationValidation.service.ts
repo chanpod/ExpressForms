@@ -42,11 +42,17 @@ export class ApplicationValidationService {
     let hasErrors = false;
     if (errors) {
       Object.keys(errors).forEach((key) => {
-        if (errors[key] !== undefined) {
+        if (
+          errors[key] !== undefined ||
+          (Array.isArray(errors[key]) && (errors[key] as []).length > 0)
+        ) {
           hasErrors = true;
         }
       });
     }
+
+    console.log("HAS ERRORS", hasErrors);
+
     return hasErrors;
   }
 
@@ -55,14 +61,12 @@ export class ApplicationValidationService {
     const dobDate = new Date(dob);
     let valid = isValid(dobDate);
 
-    if(valid){
+    if (valid) {
       const minDate = subYears(new Date(), 16);
-      console.log("MIN DATE", minDate)
-      console.log("DOB DATE", dobDate)
-      valid = isBefore(minDate, dobDate);
+      valid = isBefore(dobDate, minDate);
     }
 
-    return valid ? "Invalid Date. Must be at least 16 years old" : undefined;
+    return valid ? undefined : "Invalid Date. Must be at least 16 years old";
   }
 
   private validateStreet(street?: string | null) {
@@ -151,9 +155,16 @@ export class ApplicationValidationService {
       return errors;
     });
 
+    console.log("Required", required)
     console.log("Vehicles with errors", errors);
 
-    return errors.length === 0 && !required ? undefined : errors;
+    if (!required && errors.length === 0) {
+      return undefined;
+    }
+
+    if ((required && vehicles?.length === 0) || errors.length > 0) {
+      return errors;
+    }
   }
   //vin must be 17 long and alphanumeric
   private validateVin(vin?: string | null) {
@@ -171,13 +182,13 @@ export class ApplicationValidationService {
 
   private validateYear(year?: number | null) {
     let error = undefined;
-    let maxYearDate = addYears(new Date(), 2).getFullYear();
+    let maxYearDate = addYears(new Date(), 1).getFullYear();
     if (!year) {
       error = "Required";
     } else if (year < 1985) {
       error = "Must be at least 1985";
     } else if (year > maxYearDate) {
-      error = `Must be less than ${maxYearDate}`;
+      error = `Must be less than ${maxYearDate + 1}`;
     }
 
     return error;
@@ -200,8 +211,9 @@ export class ApplicationValidationService {
 
   completedApplication(application: ApplicationData) {
     let completed = false;
-
-    if (this.validateApplication(application) === null) {
+    const errors = this.validateApplication(application);
+    console.log(errors);
+    if (errors === null) {
       completed = true;
     }
 

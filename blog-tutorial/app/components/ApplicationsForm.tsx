@@ -139,10 +139,16 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
       </div>
       <hr />
       <div>
-        <h2 className="text-2xl">Vehicles</h2>
-        <button type="button" onClick={() => addVehicle({})}>
-          Add Vehicle
-        </button>
+        <div className="flex flex-row space-x-3">
+          <h2 className="text-2xl">Vehicles</h2>
+          <button
+            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+            type="button"
+            onClick={() => addVehicle({})}
+          >
+            + Add Vehicle
+          </button>
+        </div>
         <div className="flex flex-row space-x-3">
           {map(
             filter(

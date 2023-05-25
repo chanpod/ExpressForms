@@ -7,7 +7,7 @@ import { ApplicationData, ApplicationForm, RemoveVehicle } from "~/types/Applica
 export function getApplications() {
   return prisma.application.findMany({
     select: { id: true, name: true, completed: true },
-    orderBy: { updatedAt: "desc" },
+    orderBy: { createdAt: "desc" },
   });
 }
 
@@ -18,6 +18,7 @@ export function createApplication(application: ApplicationData) {
       firstName: application.firstName,
       lastName: application.lastName,
       dob: application.dob,
+      completed: application.completed,
       address: {
         create: {
           street: application.address.street,
@@ -65,6 +66,7 @@ export function updateApplication({
       firstName: application.firstName,
       lastName: application.lastName,
       dob: application.dob,
+      completed: application.completed,
       address: {
         update: {
           street: application.address.street,

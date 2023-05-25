@@ -126,17 +126,6 @@ export const VehicleForm = ({
           </div>
         )}
       </div>
-      <div className="px-6 pb-2 pt-4">
-        {!editingVehicle && (
-          <button
-            type="button"
-            onClick={addVehicleToParent}
-            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-          >
-            Add Vehicle
-          </button>
-        )}
-      </div>
     </div>
   );
 };
