@@ -1,21 +1,15 @@
-import { Address, Application, Vehicle } from "@prisma/client";
-import { Form, useFetcher, useSubmit } from "@remix-run/react";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { Vehicle } from "@prisma/client";
+import { filter, find, findIndex, map } from "lodash";
+import { useEffect, useRef, useState } from "react";
 import Input from "~/components/Input";
-import { ApplicationForm, RemoveVehicle } from "~/types/Application";
-import { VehicleForm } from "./VehicleForm";
-import { filter, findIndex, map, replace } from "lodash";
-import PersonForm from "./PersonForm";
+import {
+  ApplicationActionErrors,
+  ApplicationForm,
+  RemoveVehicle,
+} from "~/types/Application";
 import AddressForm from "./AddressForm";
-
-export interface ApplicationActionErrors {
-  name?: string;
-  firstName?: string;
-  lastName?: string;
-  dob?: string;
-  vehicles?: Vehicle[];
-  address?: Address;
-}
+import PersonForm from "./PersonForm";
+import { VehicleForm } from "./VehicleForm";
 
 interface Props {
   errors?: ApplicationActionErrors;
@@ -47,6 +41,13 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
     }
   }, [errors]);
 
+  useEffect(() => {
+    //We want to update the new vehicles if saved properly so they have a proper ID. But if there's vehicle errors we want to skip this step or we'll lose the new vehicles
+    if (application?.vehicles && errors?.vehicles?.length === 0) {
+      setVehicles(application?.vehicles ?? []);
+    }
+  }, [application?.vehicles]);
+
   function addVehicle(vehicle: Partial<Vehicle>) {
     if (vehicles.length < 3) {
       setVehicles([...vehicles, vehicle]);
@@ -76,11 +77,26 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
     }
   }
 
-  function updateVehicle(vehicle: Partial<Vehicle>, newVehiclePosition: number) {
-    const newVehicles = [...vehicles];
-    newVehicles[newVehiclePosition] = vehicle;
+  function updateVehicle(
+    vehicle: Partial<Vehicle>,
+    newVehiclePosition: number
+  ) {
+    let newVehicles = [...vehicles];
 
-    setVehicles(newVehicles);
+    newVehicles.splice(newVehiclePosition, 1);
+    const duplicateVin = find(
+      newVehicles,
+      (iVehicle) => iVehicle.vin === vehicle.vin && vehicle.vin !== ""
+    );
+
+    if (duplicateVin) {
+      alert("Can't have duplicate VINs");
+    } else {
+      newVehicles = [...vehicles];
+      newVehicles[newVehiclePosition] = vehicle;
+
+      setVehicles(newVehicles);
+    }
   }
 
   return (
@@ -126,7 +142,7 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
               <VehicleForm
                 key={index}
                 position={index}
-                vehicle={vehicle as Vehicle}                
+                vehicle={vehicle as Vehicle}
                 updateVehicle={updateVehicle}
                 removeVehicle={markVehicleForRemoval}
                 errors={errors}

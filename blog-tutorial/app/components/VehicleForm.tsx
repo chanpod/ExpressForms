@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from "react";
-import Input from "./Input";
 import { Vehicle } from "@prisma/client";
-import { ApplicationActionErrors } from "./ApplicationsForm";
+import { useRef } from "react";
+import Input from "./Input";
+
 import { find } from "lodash";
-import { error } from "console";
+import { ApplicationActionErrors } from "~/types/Application";
 import VehicleCard from "./VehicleCard";
 
 interface Props {

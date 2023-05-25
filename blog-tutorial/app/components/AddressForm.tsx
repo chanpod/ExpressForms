@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import Input from "./Input";
-import { ApplicationActionErrors } from "./ApplicationsForm";
-import { ApplicationForm } from "~/types/Application";
+
+import { ApplicationActionErrors, ApplicationForm } from "~/types/Application";
 
 interface Props {
   errors?: ApplicationActionErrors;
@@ -24,7 +24,7 @@ const AddressForm = ({ errors, application }: Props) => {
         errorMessage={errors?.address?.street}
         defaultValue={application?.address?.street}
       />
-      
+
       <Input
         label="City"
         ref={cityRef}

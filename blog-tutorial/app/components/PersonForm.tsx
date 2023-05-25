@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Input from "./Input";
-import { ApplicationActionErrors } from "./ApplicationsForm";
-import { ApplicationForm } from "~/types/Application";
+
+import { ApplicationActionErrors, ApplicationForm } from "~/types/Application";
 import DateInput from "./DateInput";
 
 interface Props {

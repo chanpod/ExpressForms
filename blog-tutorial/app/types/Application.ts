@@ -11,6 +11,15 @@ export interface ApplicationData
   vehicles: Vehicle[];
 }
 
+export interface ApplicationActionErrors {
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  dob?: string;
+  vehicles?: Vehicle[];
+  address?: Address;
+}
+
 export interface ApplicationForm
   extends Pick<
     Application,

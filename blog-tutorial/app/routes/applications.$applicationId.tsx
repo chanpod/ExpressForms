@@ -5,6 +5,7 @@ import {
   isRouteErrorResponse,
   useFetcher,
   useLoaderData,
+  useNavigate,
   useRouteError,
   useSearchParams,
 } from "@remix-run/react";
@@ -76,11 +77,19 @@ export default function ApplicationDetailsPage() {
   let [searchParams, setSearchParams] = useSearchParams();
   const editing = searchParams.get("editing") === "true";
   const submitter = useFetcher();
+  const navigate = useNavigate();
   const formRef = useRef();
 
   useEffect(() => {
     formRef.current?.reset();
   }, []);
+
+  useEffect(() => {
+    if(submitter.data && !submitter.data.errors) {
+      alert("Successfully Updated Appplication")
+      navigate(".")
+    }
+  }, [submitter.data]);
   
   function toggleEditing() {
     let newSearchParams = new URLSearchParams(searchParams);

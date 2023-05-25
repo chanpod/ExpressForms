@@ -2,8 +2,8 @@ import { Address, Application, Vehicle } from "@prisma/client";
 import { addYears, isBefore, isValid, subYears } from "date-fns";
 import { forEach, reduce, subtract } from "lodash";
 
-import { ApplicationActionErrors } from "~/components/ApplicationsForm";
 import {
+  ApplicationActionErrors,
   ApplicationData,
   ApplicationForm,
   RemoveVehicle,
@@ -155,7 +155,7 @@ export class ApplicationValidationService {
           //b/c we look at vin for the error, we can't use it as the id here. Sketchy design is sketchy
           vehicleError.id = vehicle.vin;
         }
-        return errors.push(vehicleError); 
+        return errors.push(vehicleError);
       }
 
       return errors;
