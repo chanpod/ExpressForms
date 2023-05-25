@@ -11,27 +11,35 @@ import { ApplicationFormService } from "~/services/ApplicationForm.service";
 import { ApplicationValidationService } from "~/services/ApplicationValidation.service";
 import { ApplicationForm } from "~/types/Application";
 
+/**
+ * Actions are a lumping of everything but GET. This includes POST, PUT, PATCH, DELETE.
+ * In this particular rout
+ *
+ */
 export const action = async ({ request }: ActionArgs) => {
-  const applicationValidationService = new ApplicationValidationService();
-  const applicationFormService = new ApplicationFormService();
+  if (request.method === "POST") {
+    const applicationValidationService = new ApplicationValidationService();
+    const applicationFormService = new ApplicationFormService();
 
-  const formData = await request.formData();
-  const application = applicationFormService.extractFormData(formData);
+    const formData = await request.formData();
+    const application = applicationFormService.extractFormData(formData);
 
-  const errors =
-    applicationValidationService.validateApplicationForm(application);
+    const errors =
+      applicationValidationService.validateApplicationForm(application);
 
-  if (errors) {
-    return json({ errors: errors }, { status: 400 });
+    if (errors) {
+      return json({ errors: errors }, { status: 400 });
+    }
+
+    const newApplication = await createApplication(application);
+
+    return redirect(`/applications/${newApplication.id}`);
   }
 
-  const newApplication = await createApplication(application);
-
-  return redirect(`/applications/${newApplication.id}`);
+  throw new Error("Method not allowed");
 };
 
 export default function NewNotePage() {
-  const actionData = useActionData<{ errors: ApplicationActionErrors }>();
   const formRef = useRef();
   const submitter = useFetcher();
 

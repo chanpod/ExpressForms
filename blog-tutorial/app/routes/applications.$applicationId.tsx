@@ -19,6 +19,8 @@ import {
 import { ApplicationValidationService } from "~/services/ApplicationValidation.service";
 import { ApplicationFormService } from "~/services/ApplicationForm.service";
 import { ApplicationData, ApplicationForm } from "~/types/Application";
+import { map } from "lodash";
+import VehicleCard from "~/components/VehicleCard";
 
 interface ILoaderData {
   application: ApplicationForm;
@@ -161,12 +163,34 @@ export default function ApplicationDetailsPage() {
           </Form>
         </>
       ) : (
-        <div className="flex flex-col space-y-3">
-          <p className="py-6">First Name: {data?.application?.firstName}</p>
-          <p className="py-6">Last Name: {data?.application?.lastName}</p>
-          <p className="py-6">City: {data?.application?.address?.city}</p>
-          <p className="py-6">State: {data?.application?.address?.state}</p>
-          <p className="py-6">Zip: {data?.application?.address?.zip}</p>
+        <div className="flex flex-col space-y-2">
+          <div>
+            Name: {data?.application?.firstName} {data?.application?.lastName}
+          </div>
+          <div>
+            DOB: {data?.application?.dob}
+          </div>
+
+          <div>
+            Address: {data?.application?.address?.city},{" "}
+            {data?.application?.address?.state}{" "}
+            {data?.application?.address?.zip}
+          </div>
+
+          <div>Vehicles</div>
+          <div className="flew-row flex space-x-3">
+            {map(data.application.vehicles, (vehicle) => (
+              <VehicleCard>
+                <div className="flex flex-col">
+                  <div>
+                    {vehicle.make} {vehicle.model}
+                  </div>
+                  <div>Year: {vehicle.year}</div>
+                  <div>VIN: {vehicle.vin}</div>
+                </div>
+              </VehicleCard>
+            ))}
+          </div>
 
           <hr className="my-4" />
           <div>

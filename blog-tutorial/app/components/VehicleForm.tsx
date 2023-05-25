@@ -4,6 +4,7 @@ import { Vehicle } from "@prisma/client";
 import { ApplicationActionErrors } from "./ApplicationsForm";
 import { find } from "lodash";
 import { error } from "console";
+import VehicleCard from "./VehicleCard";
 
 interface Props {
   vehicle?: Vehicle;
@@ -70,62 +71,64 @@ export const VehicleForm = ({
   }
 
   return (
-    <div className="max-w-sm overflow-hidden rounded shadow-xl">
-      <div className="px-6 py-4">
-        <div className="mb-2 text-xl font-bold">
-          {editingVehicle ? "Update Vehicle" : "Add A Vehicle"}
-        </div>
-        <p className="space-y-1 text-base text-gray-700">
-          <Input
-            label="Make"
-            name="make"
-            ref={makeRef}
-            defaultValue={vehicle?.make}
-            errors={hasErrors?.make !== undefined}
-            errorMessage={hasErrors?.make!}
-            onChange={updateParentVehicle}
-          />
-          <Input
-            label="Model"
-            name="model"
-            ref={modelRef}
-            defaultValue={vehicle?.model}
-            errors={hasErrors?.model !== undefined}
-            errorMessage={hasErrors?.model!}
-            onChange={updateParentVehicle}
-          />
-          <Input
-            label="Year"
-            name="year"
-            ref={yearRef}
-            defaultValue={vehicle?.year}
-            errors={hasErrors?.year !== undefined}
-            errorMessage={hasErrors?.year?.toString() as string}
-            onChange={updateParentVehicle}
-          />
-          <Input
-            label="VIN"
-            name="vin"
-            ref={vinRef}
-            defaultValue={vehicle?.vin}
-            errors={hasErrors?.vin !== undefined}
-            errorMessage={hasErrors?.vin!}
-            onChange={updateParentVehicle}
-          />
-        </p>
-
-        {editingVehicle && (
-          <div className="mt-3">
-            <button
-              type="button"
-              className="rounded bg-red-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-              onClick={removeVehicleFromParent}
-            >
-              Remove
-            </button>
-          </div>
-        )}
+    <VehicleCard>
+      <div className="mb-2 text-xl font-bold">
+        {editingVehicle ? "Update Vehicle" : "Add A Vehicle"}
       </div>
-    </div>
+      <p className="space-y-1 text-base text-gray-700">
+        <Input
+          label="Make"
+          name="make"
+          ref={makeRef}
+          defaultValue={vehicle?.make}
+          errors={hasErrors?.make !== undefined}
+          errorMessage={hasErrors?.make!}
+          onChange={updateParentVehicle}
+        />
+        <Input
+          label="Model"
+          name="model"
+          ref={modelRef}
+          defaultValue={vehicle?.model}
+          errors={hasErrors?.model !== undefined}
+          errorMessage={hasErrors?.model!}
+          onChange={updateParentVehicle}
+        />
+        <Input
+          label="Year"
+          name="year"
+          ref={yearRef}
+          defaultValue={vehicle?.year}
+          errors={hasErrors?.year !== undefined}
+          errorMessage={hasErrors?.year?.toString() as string}
+          onChange={updateParentVehicle}
+        />
+        <Input
+          label="VIN"
+          name="vin"
+          ref={vinRef}
+          defaultValue={vehicle?.vin}
+          errors={hasErrors?.vin !== undefined}
+          errorMessage={hasErrors?.vin!}
+          onChange={updateParentVehicle}
+        />
+      </p>
+
+      {editingVehicle && (
+        <div className="mt-3">
+          <button
+            type="button"
+            className="rounded bg-red-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+            onClick={removeVehicleFromParent}
+          >
+            {vehicle.id ? "Delete" : "Remove"}
+          </button>
+        </div>
+      )}
+
+      {vehicle.id === undefined && (
+        <span>This vehicle has not been added yet!</span>
+      )}
+    </VehicleCard>
   );
 };
