@@ -9,15 +9,18 @@ import VehicleCard from "./VehicleCard";
 interface Props {
   vehicle?: Vehicle;
   errors?: ApplicationActionErrors;
-  addVehicle: (vehicle: Partial<Vehicle>) => void;
-  updateVehicle?: (vehicle: Partial<Vehicle>) => void;
+  position: number;
+  updateVehicle?: (
+    vehicle: Partial<Vehicle>,
+    newVehiclePosition: number
+  ) => void;
   removeVehicle?: (vehicle: Partial<Vehicle>) => void;
 }
 
 export const VehicleForm = ({
   vehicle,
   errors,
-  addVehicle,
+  position,
   updateVehicle,
   removeVehicle,
 }: Props) => {
@@ -31,7 +34,7 @@ export const VehicleForm = ({
   const hasErrors = find(
     errors?.vehicles,
     (vehicleError) =>
-      vehicleError.id === vehicle?.id || vehicleError.vin === vehicle?.vin
+      vehicleError.id === vehicle?.id || vehicleError.id === vehicle?.vin
   );
 
   function updateParentVehicle() {
@@ -45,23 +48,8 @@ export const VehicleForm = ({
     };
 
     if (updateVehicle) {
-      updateVehicle(newVehicle);
+      updateVehicle(newVehicle, position);
     }
-  }
-
-  function addVehicleToParent() {
-    const vehicle: Partial<Vehicle> = {
-      make: makeRef.current?.value!,
-      model: modelRef.current?.value!,
-      year: parseInt(yearRef.current?.value!),
-      vin: vinRef.current?.value!,
-    };
-    addVehicle(vehicle);
-
-    makeRef.current.value = "";
-    modelRef.current.value = "";
-    yearRef.current.value = "";
-    vinRef.current.value = "";
   }
 
   function removeVehicleFromParent() {

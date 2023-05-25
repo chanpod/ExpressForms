@@ -81,7 +81,7 @@ export default function ApplicationDetailsPage() {
   useEffect(() => {
     formRef.current?.reset();
   }, []);
-
+  
   function toggleEditing() {
     let newSearchParams = new URLSearchParams(searchParams);
     if (editing) {
@@ -116,6 +116,8 @@ export default function ApplicationDetailsPage() {
       }
     );
   }
+
+  const vehicles = data?.application?.vehicles || [];
 
   return (
     <div className="max-w-xl">
@@ -179,7 +181,7 @@ export default function ApplicationDetailsPage() {
 
           <div>Vehicles</div>
           <div className="flew-row flex space-x-3">
-            {map(data.application.vehicles, (vehicle) => (
+            {map(vehicles, (vehicle) => (
               <VehicleCard>
                 <div className="flex flex-col">
                   <div>

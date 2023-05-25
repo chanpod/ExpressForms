@@ -6,6 +6,7 @@ import { ApplicationForm, RemoveVehicle } from "~/types/Application";
 import { VehicleForm } from "./VehicleForm";
 import { filter, findIndex, map, replace } from "lodash";
 import PersonForm from "./PersonForm";
+import AddressForm from "./AddressForm";
 
 export interface ApplicationActionErrors {
   name?: string;
@@ -75,10 +76,10 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
     }
   }
 
-  function updateVehicle(vehicle: Partial<Vehicle>) {
-    const index = findIndex(vehicles, (v) => v.id === vehicle.id);
+  function updateVehicle(vehicle: Partial<Vehicle>, newVehiclePosition: number) {
     const newVehicles = [...vehicles];
-    newVehicles[index] = vehicle;
+    newVehicles[newVehiclePosition] = vehicle;
+
     setVehicles(newVehicles);
   }
 
@@ -98,6 +99,9 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
 
       <div>
         <PersonForm errors={errors} application={application} />
+      </div>
+      <div>
+        <AddressForm errors={errors} application={application} />
       </div>
 
       <hr />
@@ -121,8 +125,8 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
             (vehicle, index) => (
               <VehicleForm
                 key={index}
-                vehicle={vehicle as Vehicle}
-                addVehicle={addVehicle}
+                position={index}
+                vehicle={vehicle as Vehicle}                
                 updateVehicle={updateVehicle}
                 removeVehicle={markVehicleForRemoval}
                 errors={errors}

@@ -8,7 +8,7 @@ interface Props {
   application?: ApplicationForm;
 }
 
-const AddressForm = (props: Props) => {
+const AddressForm = ({ errors, application }: Props) => {
   const cityRef = useRef<HTMLTextAreaElement>(null);
   const stateRef = useRef<HTMLTextAreaElement>(null);
   const zipRef = useRef<HTMLTextAreaElement>(null);
@@ -16,6 +16,15 @@ const AddressForm = (props: Props) => {
 
   return (
     <div className="flex flex-row space-x-3">
+      <Input
+        label="Street"
+        ref={streetRef}
+        name="street"
+        errors={errors?.address?.street !== undefined}
+        errorMessage={errors?.address?.street}
+        defaultValue={application?.address?.street}
+      />
+      
       <Input
         label="City"
         ref={cityRef}
@@ -41,15 +50,6 @@ const AddressForm = (props: Props) => {
         errors={errors?.address?.zip !== undefined}
         errorMessage={errors?.address?.zip}
         defaultValue={application?.address?.zip}
-      />
-
-      <Input
-        label="Street"
-        ref={streetRef}
-        name="street"
-        errors={errors?.address?.street !== undefined}
-        errorMessage={errors?.address?.street}
-        defaultValue={application?.address?.street}
       />
     </div>
   );

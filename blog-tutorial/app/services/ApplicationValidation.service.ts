@@ -3,7 +3,11 @@ import { addYears, isBefore, isValid, subYears } from "date-fns";
 import { forEach, reduce, subtract } from "lodash";
 
 import { ApplicationActionErrors } from "~/components/ApplicationsForm";
-import { ApplicationData, ApplicationForm } from "~/types/Application";
+import {
+  ApplicationData,
+  ApplicationForm,
+  RemoveVehicle,
+} from "~/types/Application";
 
 export class ApplicationValidationService {
   validateApplicationForm(
@@ -135,6 +139,7 @@ export class ApplicationValidationService {
     let errors = [] as Partial<Vehicle>[];
 
     forEach(vehicles, (vehicle) => {
+      if ((vehicle as RemoveVehicle).remove) return;
       let vehicleError = {} as Partial<Vehicle>;
       vehicleError.make = this.validateName(vehicle.make);
       vehicleError.model = this.validateName(vehicle.model);
@@ -142,8 +147,15 @@ export class ApplicationValidationService {
       vehicleError.vin = this.validateVin(vehicle.vin);
 
       if (this.checkForErrors(vehicleError)) {
-        vehicleError.id = vehicle.id;
-        return errors?.push(vehicleError);
+        //We need to know which vehicle the error belongs to. Could use a map instead of an array
+        //new vehicles don't have an ID yet. Could store them in the DB invalid to mitigate this.
+        if (vehicle.id) {
+          vehicleError.id = vehicle.id;
+        } else {
+          //b/c we look at vin for the error, we can't use it as the id here. Sketchy design is sketchy
+          vehicleError.id = vehicle.vin;
+        }
+        return errors.push(vehicleError); 
       }
 
       return errors;
