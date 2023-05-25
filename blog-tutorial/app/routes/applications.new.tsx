@@ -43,7 +43,7 @@ export default function NewNotePage() {
   function submit(formEvent: React.FormEvent<HTMLFormElement>) {
     formEvent.preventDefault();
     const form = new FormData(formRef.current!);
-    console.log(form.get("name"));
+
     const applicationService = new ApplicationFormService();
     const newApplication: Partial<ApplicationForm> =
       applicationService.buildFormData(form);
@@ -68,7 +68,7 @@ export default function NewNotePage() {
         }}
       >
         <ApplicationsForm errors={submitter.data?.errors} />
-        <div style = {{maxWidth:"300px"}} className="mt-5">
+        <div style={{ maxWidth: "300px" }} className="mt-5">
           <button
             type="submit"
             onClick={submit}
