@@ -33,8 +33,6 @@ export class ApplicationValidationService {
     errors.address = this.validateAddress(application.address);
     errors.vehicles = this.validateVehicles(application.vehicles, true);
 
-    console.log("VALIDATION ERRORS", errors);
-
     return this.checkForErrors(errors) ? errors : null;
   }
 
@@ -50,8 +48,6 @@ export class ApplicationValidationService {
         }
       });
     }
-
-    console.log("HAS ERRORS", hasErrors);
 
     return hasErrors;
   }
@@ -145,8 +141,6 @@ export class ApplicationValidationService {
       vehicleError.year = this.validateYear(vehicle.year);
       vehicleError.vin = this.validateVin(vehicle.vin);
 
-      console.log("Vehicle errors", vehicleError);
-
       if (this.checkForErrors(vehicleError)) {
         vehicleError.id = vehicle.id;
         return errors?.push(vehicleError);
@@ -154,9 +148,6 @@ export class ApplicationValidationService {
 
       return errors;
     });
-
-    console.log("Required", required)
-    console.log("Vehicles with errors", errors);
 
     if (!required && errors.length === 0) {
       return undefined;
@@ -212,12 +203,10 @@ export class ApplicationValidationService {
   completedApplication(application: ApplicationData) {
     let completed = false;
     const errors = this.validateApplication(application);
-    console.log(errors);
+
     if (errors === null) {
       completed = true;
     }
-
-    console.log("COMPLETED", completed);
 
     return completed;
   }

@@ -1,5 +1,5 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
-import type { LinksFunction, LoaderArgs } from "@remix-run/node";
+import { LinksFunction, LoaderArgs, redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Links,
@@ -19,6 +19,9 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderArgs) => {
+  if(!request.url.includes('/application')){
+    return redirect('/applications')
+  }
   return json({ user: await getUser(request) });
 };
 

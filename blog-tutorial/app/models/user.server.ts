@@ -5,6 +5,12 @@ import { prisma } from "~/db.server";
 
 export type { User } from "@prisma/client";
 
+
+//This was left in just to reduce the amount I need to fix on the boilerplate server auth work. I did not do this part.
+
+
+
+
 export async function getUserById(id: User["id"]) {
   return prisma.user.findUnique({ where: { id } });
 }
