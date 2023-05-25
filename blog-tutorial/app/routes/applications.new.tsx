@@ -68,9 +68,15 @@ export default function NewNotePage() {
         }}
       >
         <ApplicationsForm errors={submitter.data?.errors} />
-        <button type="submit" onClick={submit}>
-          Save
-        </button>
+        <div style = {{maxWidth:"300px"}} className="mt-5">
+          <button
+            type="submit"
+            onClick={submit}
+            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+          >
+            Save
+          </button>
+        </div>
       </Form>
     </>
   );

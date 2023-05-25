@@ -110,7 +110,7 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
 
       <hr />
       <div>
-        <div className="flex flex-row space-x-3">
+        <div className="flex flex-row space-x-3 mt-5">
           <h2 className="text-2xl">Vehicles</h2>
           <button
             className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"

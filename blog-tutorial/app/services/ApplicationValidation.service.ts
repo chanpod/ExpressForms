@@ -1,6 +1,6 @@
 import { Address, Application, Vehicle } from "@prisma/client";
 import { addYears, isBefore, isValid, subYears } from "date-fns";
-import { forEach, reduce, subtract } from "lodash";
+import { filter, forEach, reduce, subtract } from "lodash";
 
 import {
   ApplicationActionErrors,
@@ -30,12 +30,17 @@ export class ApplicationValidationService {
   ): ApplicationActionErrors | null {
     let errors: ApplicationActionErrors = {};
 
+    const vehiclesWithoutRemoved: Vehicle[] = filter(
+      application.vehicles,
+      (vehicle: RemoveVehicle) => vehicle.remove !== true
+    ) || [];
+
     errors.name = this.validateName(application.name);
     errors.firstName = this.validateName(application.firstName);
     errors.lastName = this.validateName(application.lastName);
     errors.dob = this.validateDob(application.dob);
     errors.address = this.validateAddress(application.address);
-    errors.vehicles = this.validateVehicles(application.vehicles, true);
+    errors.vehicles = this.validateVehicles(vehiclesWithoutRemoved, true);
 
     return this.checkForErrors(errors) ? errors : null;
   }
