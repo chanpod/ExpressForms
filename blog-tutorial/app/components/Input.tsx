@@ -8,6 +8,7 @@ interface Props {
   defaultValue?: string | null;
   onChange?: (event: React.ChangeEvent) => void;
   type?: string;
+  
 }
 
 const Input = forwardRef(
@@ -29,6 +30,7 @@ const Input = forwardRef(
             aria-invalid={errors}
             aria-errormessage={errors ? errorMessage : undefined}
           />
+
         </label>
         {errors ? (
           <div className="pt-1 text-red-700" id="body-error">

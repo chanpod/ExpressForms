@@ -1,6 +1,7 @@
 import { Address, Vehicle } from "@prisma/client";
 
 import { ApplicationData, ApplicationForm } from "~/types/Application";
+import { ApplicationValidationService } from "./ApplicationValidation.service";
 
 export class ApplicationFormService {
   buildFormData(formData: FormData) {
@@ -19,7 +20,8 @@ export class ApplicationFormService {
 
   extractFormData(formData: FormData) {
     const vehicles: Vehicle[] = JSON.parse(formData.get("vehicles") as string);
-    console.log("Vehicles", vehicles);
+    const applicationValidation = new ApplicationValidationService();
+
     const application: ApplicationData = {
       name: formData.get("name") as string,
       firstName: formData.get("firstName") as string,
@@ -34,6 +36,9 @@ export class ApplicationFormService {
       } as Address,
       vehicles: vehicles ? vehicles : [],
     };
+
+    application.completed =
+      applicationValidation.completedApplication(application);
 
     return application;
   }

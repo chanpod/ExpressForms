@@ -60,7 +60,7 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
     if (vehicle.id) {
       index = findIndex(
         vehicles,
-        (v) => v.id === vehicle.id || v.vin === vehicle.vin
+        (v) => v.id === vehicle.id || v.id === vehicle.id
       );
       const newVehicles = [...vehicles];
       vehicle.remove = true;
@@ -84,6 +84,7 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
 
   return (
     <>
+      <h2 className="text-2xl">Personal Information</h2>
       <div>
         <Input
           label="Name"
@@ -94,7 +95,7 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
           defaultValue={application?.name}
         />
       </div>
- 
+
       <div>
         <PersonForm errors={errors} application={application} />
       </div>
@@ -136,25 +137,37 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
           defaultValue={application?.address?.street}
         />
       </div>
+      <hr />
+      <div>
+        <h2 className="text-2xl">Vehicles</h2>
+        <button type="button" onClick={() => addVehicle({})}>
+          Add Vehicle
+        </button>
+        <div className="flex flex-row space-x-3">
+          {map(
+            filter(
+              vehicles,
+              (vehicle: RemoveVehicle) => vehicle.remove !== true
+            ),
+            (vehicle, index) => (
+              <VehicleForm
+                key={index}
+                vehicle={vehicle as Vehicle}
+                addVehicle={addVehicle}
+                updateVehicle={updateVehicle}
+                removeVehicle={markVehicleForRemoval}
+                errors={errors}
+              />
+            )
+          )}
 
-      <div className="flex flex-row space-x-3">
-        {map(
-          filter(vehicles, (vehicle: RemoveVehicle) => vehicle.remove !== true),
-          (vehicle, index) => (
-            <VehicleForm
-              key={index}
-              vehicle={vehicle as Vehicle}
-              addVehicle={addVehicle}
-              updateVehicle={updateVehicle}
-              removeVehicle={markVehicleForRemoval}
-            />
-          )
-        )}
-
-        <input name="vehicles" type="hidden" value={JSON.stringify(vehicles)} />
+          <input
+            name="vehicles"
+            type="hidden"
+            value={JSON.stringify(vehicles)}
+          />
+        </div>
       </div>
-
-      <VehicleForm addVehicle={addVehicle} />
     </>
   );
 };

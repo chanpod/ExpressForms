@@ -29,11 +29,11 @@ export const VehicleForm = ({
 
   const hasErrors = find(
     errors?.vehicles,
-    (vehicleError) => vehicleError.vin !== vehicle?.vin
+    (vehicleError) =>
+      vehicleError.id === vehicle?.id || vehicleError.vin === vehicle?.vin
   );
 
   function updateParentVehicle() {
-    console.log("Updating parent with new text values");
     const newVehicle: Partial<Vehicle> = {
       make: makeRef.current?.value!,
       model: modelRef.current?.value!,

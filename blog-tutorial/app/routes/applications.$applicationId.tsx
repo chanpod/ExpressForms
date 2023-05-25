@@ -121,7 +121,7 @@ export default function ApplicationDetailsPage() {
 
   return (
     <div className="max-w-xl">
-      <h3 className="text-2xl font-bold">{data?.application?.name}</h3>
+      <h3 className="text-2xl font-bold mb-5">{data?.application?.name}</h3>
       {editing ? (
         <>
           <Form
@@ -139,7 +139,7 @@ export default function ApplicationDetailsPage() {
               application={data.application as any}
               errors={submitter.data?.errors}
             />
-            <div className="flex space-x-3">
+            <div className="flex space-x-3 mt-6">
               <button type="button" onClick={toggleEditing}>
                 Cancel
               </button>
@@ -165,8 +165,13 @@ export default function ApplicationDetailsPage() {
         </>
       ) : (
         <div className="flex flex-col space-y-3">
-          <p className="py-6">{data?.application?.firstName}</p>
-          <p className="py-6">{data?.application?.lastName}</p>
+          <p className="py-6">First Name: {data?.application?.firstName}</p>
+          <p className="py-6">Last Name: {data?.application?.lastName}</p>          
+          <p className="py-6">City: {data?.application?.address?.city}</p>
+          <p className="py-6">State: {data?.application?.address?.state}</p>
+          <p className="py-6">Zip: {data?.application?.address?.zip}</p>
+
+
           <hr className="my-4" />
           <div>
             <button

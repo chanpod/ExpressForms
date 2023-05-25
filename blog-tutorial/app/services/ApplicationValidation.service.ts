@@ -1,6 +1,6 @@
 import { Address, Application, Vehicle } from "@prisma/client";
-import { addYears, isValid } from "date-fns";
-import { reduce } from "lodash";
+import { addYears, isBefore, isValid, subYears } from "date-fns";
+import { forEach, reduce, subtract } from "lodash";
 
 import { ApplicationActionErrors } from "~/components/ApplicationsForm";
 import { ApplicationData, ApplicationForm } from "~/types/Application";
@@ -21,6 +21,23 @@ export class ApplicationValidationService {
     return this.checkForErrors(errors) ? errors : null;
   }
 
+  validateApplication(
+    application: ApplicationData
+  ): ApplicationActionErrors | null {
+    let errors: ApplicationActionErrors = {};
+
+    errors.name = this.validateName(application.name);
+    errors.firstName = this.validateName(application.firstName);
+    errors.lastName = this.validateName(application.lastName);
+    errors.dob = this.validateDob(application.dob);
+    errors.address = this.validateAddress(application.address);
+    errors.vehicles = this.validateVehicles(application.vehicles, true);
+
+    console.log("VALIDATION ERRORS", errors);
+
+    return this.checkForErrors(errors) ? errors : null;
+  }
+
   checkForErrors(errors?: Record<string, unknown>) {
     let hasErrors = false;
     if (errors) {
@@ -33,11 +50,19 @@ export class ApplicationValidationService {
     return hasErrors;
   }
 
+  //Must be 18 years old
   private validateDob(dob: string) {
     const dobDate = new Date(dob);
-    isValid(dobDate);
+    let valid = isValid(dobDate);
 
-    console.log("DOB", dobDate.toISOString());
+    if(valid){
+      const minDate = subYears(new Date(), 16);
+      console.log("MIN DATE", minDate)
+      console.log("DOB DATE", dobDate)
+      valid = isBefore(minDate, dobDate);
+    }
+
+    return valid ? "Invalid Date. Must be at least 16 years old" : undefined;
   }
 
   private validateStreet(street?: string | null) {
@@ -106,32 +131,42 @@ export class ApplicationValidationService {
     return error;
   }
 
-  private validateVehicles(vehicles?: Vehicle[] | null) {
-    let error = [] as Partial<Vehicle>[];
+  private validateVehicles(vehicles?: Vehicle[] | null, required = false) {
+    let errors = [] as Partial<Vehicle>[];
 
-    reduce(
-      vehicles,
-      (errors, vehicle) => {
-        let vehicleError = {} as Partial<Vehicle>;
-        vehicleError.make = this.validateName(vehicle.make);
-        vehicleError.model = this.validateName(vehicle.model);
-        vehicleError.year = this.validateYear(vehicle.year);
-        vehicleError.vin = this.validateVin(vehicle.vin);
+    forEach(vehicles, (vehicle) => {
+      let vehicleError = {} as Partial<Vehicle>;
+      vehicleError.make = this.validateName(vehicle.make);
+      vehicleError.model = this.validateName(vehicle.model);
+      vehicleError.year = this.validateYear(vehicle.year);
+      vehicleError.vin = this.validateVin(vehicle.vin);
 
-        if (this.checkForErrors(vehicleError)) {
-          return errors?.push(vehicleError);
-        }
+      console.log("Vehicle errors", vehicleError);
 
-        return errors;
-      },
-      error
-    );
-    return error;
+      if (this.checkForErrors(vehicleError)) {
+        vehicleError.id = vehicle.id;
+        return errors?.push(vehicleError);
+      }
+
+      return errors;
+    });
+
+    console.log("Vehicles with errors", errors);
+
+    return errors.length === 0 && !required ? undefined : errors;
   }
-
+  //vin must be 17 long and alphanumeric
   private validateVin(vin?: string | null) {
-    var vinPattern = /^[A-HJ-NPR-Z0-9]{17}$/;
-    return vinPattern.test(vin) ? undefined : "Invalid VIN";
+    let error = undefined;
+    if (!vin) {
+      error = "Required";
+    } else if (vin.length !== 17) {
+      error = "Must be 17 characters. Currently " + vin.length;
+    } else if (!vin.match(/^[a-zA-Z0-9]+$/)) {
+      error = "Must be alphanumeric";
+    }
+
+    return error;
   }
 
   private validateYear(year?: number | null) {
@@ -139,8 +174,8 @@ export class ApplicationValidationService {
     let maxYearDate = addYears(new Date(), 2).getFullYear();
     if (!year) {
       error = "Required";
-    } else if (year < 1900) {
-      error = "Must be at least 1900";
+    } else if (year < 1985) {
+      error = "Must be at least 1985";
     } else if (year > maxYearDate) {
       error = `Must be less than ${maxYearDate}`;
     }
@@ -163,11 +198,15 @@ export class ApplicationValidationService {
     return error;
   }
 
-  completedApplication(application: Partial<ApplicationForm>) {
+  completedApplication(application: ApplicationData) {
     let completed = false;
 
-    if (application.name && application.firstName && application.lastName) {
+    if (this.validateApplication(application) === null) {
       completed = true;
     }
+
+    console.log("COMPLETED", completed);
+
+    return completed;
   }
 }
