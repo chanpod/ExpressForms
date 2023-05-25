@@ -6,6 +6,7 @@ import {
   useActionData,
   useLoaderData,
   useRouteError,
+  useSearchParams,
 } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
@@ -13,7 +14,11 @@ import {
   ApplicationActionErrors,
   ApplicationsForm,
 } from "~/components/ApplicationsForm";
-import { deleteApplication, getApplication } from "~/models/application.server";
+import {
+  deleteApplication,
+  getApplication,
+  updateApplication,
+} from "~/models/application.server";
 import { ApplicationsService } from "~/services/Applications.service";
 import { ApplicationForm } from "~/types/Application";
 
@@ -43,7 +48,7 @@ export const action = async ({ params, request }: ActionArgs) => {
   } else if (request.method === "PUT") {
     const applicationService = new ApplicationsService();
 
-    const application: Partial<ApplicationForm> =
+    const application: ApplicationForm =
       await applicationService.extractFormData(request);
 
     const errors = applicationService.validateApplicationForm(application);
@@ -51,6 +56,13 @@ export const action = async ({ params, request }: ActionArgs) => {
     if (errors) {
       return json({ errors: errors }, { status: 400 });
     }
+
+    const updatedApplication = await updateApplication({
+      applicationId: params.applicationId,
+      application,
+    });
+
+    return json({ application: updatedApplication });
   }
 
   throw new Error("Invalid method");
@@ -59,9 +71,24 @@ export const action = async ({ params, request }: ActionArgs) => {
 export default function NoteDetailsPage() {
   const data = useLoaderData<ILoaderData>();
   const actionData = useActionData<{ errors: ApplicationActionErrors }>();
-  const [editing, setEditing] = useState(false);
+
+  let [searchParams, setSearchParams] = useSearchParams();
+  const editing = searchParams.get("editing") === "true";
+
+  function toggleEditing() {
+    console.log(searchParams);
+    let newSearchParams = new URLSearchParams(searchParams);
+    if (editing) {
+      newSearchParams.delete("editing");
+    } else {
+      newSearchParams.set("editing", "true");
+    }
+
+    setSearchParams(newSearchParams);
+  }
+
   return (
-    <div>
+    <div className="max-w-xl">
       <h3 className="text-2xl font-bold">{data?.application?.name}</h3>
       {editing ? (
         <>
@@ -69,17 +96,19 @@ export default function NoteDetailsPage() {
             application={data.application as any}
             errors={actionData?.errors}
           />
-          <Form method="delete">
-            <div className="flex space-x-3">
-              <button onClick={() => setEditing(false)}>Cancel</button>
-              <button
-                type="submit"
-                className="rounded bg-red-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-              >
-                Delete
-              </button>
-            </div>
-          </Form>
+          <div className="flex space-x-3">
+            <button onClick={toggleEditing}>Cancel</button>
+            <Form method="delete">
+              <div>
+                <button
+                  type="submit"
+                  className="rounded bg-red-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+                >
+                  Delete
+                </button>
+              </div>
+            </Form>
+          </div>
         </>
       ) : (
         <div className="flex flex-col space-y-3">
@@ -88,7 +117,7 @@ export default function NoteDetailsPage() {
           <hr className="my-4" />
           <div>
             <button
-              onClick={() => setEditing(true)}
+              onClick={toggleEditing}
               className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
             >
               Edit

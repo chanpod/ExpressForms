@@ -1,5 +1,9 @@
-import { Address, Application } from "@prisma/client";
+import { Address, Application, Vehicle } from "@prisma/client";
 
 export interface ApplicationForm extends Application {
-  address: Address;
+  city: string;
+  state: string;
+  street: string;
+  zip: string;
+  vehicles: string | Vehicle[];
 }

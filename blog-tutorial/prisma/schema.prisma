@@ -13,7 +13,7 @@ model Address {
   city   String
   state  String
   zip    String
-  dob    String
+
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   applicationId String      @unique
 }
@@ -29,14 +29,15 @@ model Vehicle {
 }
 
 model Application {
-  id    String @id @default(cuid())
-  name  String  
+  id   String @id @default(cuid())
+  name String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   firstName String?
   lastName  String?
+  dob       String?
 
   completed Boolean @default(false)
 
