@@ -10,6 +10,7 @@ interface Props {
   errors?: ApplicationActionErrors;
   addVehicle: (vehicle: Partial<Vehicle>) => void;
   updateVehicle?: (vehicle: Partial<Vehicle>) => void;
+  removeVehicle?: (vehicle: Partial<Vehicle>) => void;
 }
 
 export const VehicleForm = ({
@@ -17,6 +18,7 @@ export const VehicleForm = ({
   errors,
   addVehicle,
   updateVehicle,
+  removeVehicle,
 }: Props) => {
   const makeRef = useRef<HTMLTextAreaElement>(null);
   const modelRef = useRef<HTMLTextAreaElement>(null);
@@ -61,13 +63,19 @@ export const VehicleForm = ({
     vinRef.current.value = "";
   }
 
+  function removeVehicleFromParent() {
+    if (removeVehicle && vehicle) {
+      removeVehicle(vehicle);
+    }
+  }
+
   return (
     <div className="max-w-sm overflow-hidden rounded shadow-xl">
       <div className="px-6 py-4">
         <div className="mb-2 text-xl font-bold">
           {editingVehicle ? "Update Vehicle" : "Add A Vehicle"}
         </div>
-        <p className="text-base text-gray-700">
+        <p className="space-y-1 text-base text-gray-700">
           <Input
             label="Make"
             name="make"
@@ -106,7 +114,17 @@ export const VehicleForm = ({
           />
         </p>
 
-        {editingVehicle && <button type = "button">Delete</button>}
+        {editingVehicle && (
+          <div className="mt-3">
+            <button
+              type="button"
+              className="rounded bg-red-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
+              onClick={removeVehicleFromParent}
+            >
+              Remove
+            </button>
+          </div>
+        )}
       </div>
       <div className="px-6 pb-2 pt-4">
         {!editingVehicle && (

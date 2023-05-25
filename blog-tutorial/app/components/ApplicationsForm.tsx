@@ -2,9 +2,9 @@ import { Address, Application, Vehicle } from "@prisma/client";
 import { Form, useFetcher, useSubmit } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import Input from "~/components/Input";
-import { ApplicationForm } from "~/types/Application";
+import { ApplicationForm, RemoveVehicle } from "~/types/Application";
 import { VehicleForm } from "./VehicleForm";
-import { findIndex, map, replace } from "lodash";
+import { filter, findIndex, map, replace } from "lodash";
 
 export interface ApplicationActionErrors {
   name?: string;
@@ -33,7 +33,9 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
   const zipRef = useRef<HTMLTextAreaElement>(null);
   const streetRef = useRef<HTMLTextAreaElement>(null);
 
-  const [vehicles, setVehicles] = useState<Partial<Vehicle>[]>(application?.vehicles ?? []);
+  const [vehicles, setVehicles] = useState<Partial<Vehicle>[]>(
+    application?.vehicles ?? []
+  );
 
   useEffect(() => {
     if (application !== undefined) {
@@ -69,9 +71,30 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
     }
   }
 
+  function markVehicleForRemoval(vehicle: Partial<RemoveVehicle>) {
+    let index;
+    //vehicle already exists in the database
+    if (vehicle.id) {
+      index = findIndex(
+        vehicles,
+        (v) => v.id === vehicle.id || v.vin === vehicle.vin
+      );
+      const newVehicles = [...vehicles];
+      vehicle.remove = true;
+      newVehicles[index] = vehicle;
+      setVehicles(newVehicles);
+    } else {
+      //vehicle is new
+      index = findIndex(vehicles, (v) => v.vin === vehicle.vin);
+      const newVehicles = [...vehicles];
+      newVehicles.splice(index, 1);
+      setVehicles(newVehicles);
+    }
+  }
+
   function submit(formEvent: React.FormEvent<HTMLFormElement>) {
     formEvent.preventDefault();
-    const application: Partial<ApplicationForm> = {
+    const newApplication: Partial<ApplicationForm> = {
       name: nameRef.current?.value!,
       firstName: firstNameRef.current?.value!,
       lastName: lastNameRef.current?.value!,
@@ -84,7 +107,7 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
     };
 
     submitter.submit(
-      { ...application },
+      { ...newApplication },
       {
         method: application ? "PUT" : "POST",
       }
@@ -192,14 +215,18 @@ export const ApplicationsForm = ({ application, errors }: Props) => {
       </div>
 
       <div className="flex flex-row space-x-3">
-        {map(vehicles, (vehicle, index) => (
-          <VehicleForm
-            key={index}
-            vehicle={vehicle as Vehicle}
-            addVehicle={addVehicle}
-            updateVehicle={updateVehicle}
-          />
-        ))}
+        {map(
+          filter(vehicles, (vehicle: RemoveVehicle) => vehicle.remove !== true),
+          (vehicle, index) => (
+            <VehicleForm
+              key={index}
+              vehicle={vehicle as Vehicle}
+              addVehicle={addVehicle}
+              updateVehicle={updateVehicle}
+              removeVehicle={markVehicleForRemoval}
+            />
+          )
+        )}
       </div>
 
       <VehicleForm addVehicle={addVehicle} />

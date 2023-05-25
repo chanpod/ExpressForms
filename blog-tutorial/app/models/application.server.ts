@@ -2,7 +2,7 @@ import { Vehicle } from "@prisma/client";
 import { filter, map } from "lodash";
 import { v } from "vitest/dist/types-e3c9754d";
 import { prisma } from "~/db.server";
-import { ApplicationForm } from "~/types/Application";
+import { ApplicationForm, RemoveVehicle } from "~/types/Application";
 
 export function getApplications() {
   return prisma.application.findMany({
@@ -40,12 +40,24 @@ export function updateApplication({
   applicationId: string;
   application: ApplicationForm;
 }) {
-  const vehiclesToUpdate = filter(application.vehicles as Vehicle[], (vehicle: Vehicle) => {
-    return vehicle.id;
-  });
-  const vehiclesToCreate = filter(application.vehicles as Vehicle[], (vehicle: Vehicle) => {
-    return !vehicle.id;
-  });
+  const vehiclesToUpdate = filter(
+    application.vehicles as Vehicle[],
+    (vehicle: Vehicle) => {
+      return vehicle.id && vehicle.remove !== true;
+    }
+  );
+  const vehiclesToCreate = filter(
+    application.vehicles as Vehicle[],
+    (vehicle: Vehicle) => {
+      return !vehicle.id;
+    }
+  );
+  const vehiclesToRemove = filter(
+    application.vehicles as RemoveVehicle[],
+    (vehicle) => {
+      return vehicle.remove;
+    }
+  );
   return prisma.application.update({
     where: { id: applicationId },
     data: {
@@ -74,6 +86,9 @@ export function updateApplication({
           };
         }),
         create: vehiclesToCreate ? (vehiclesToCreate as Vehicle[]) : undefined,
+        delete: map(vehiclesToRemove, (vehicle) => {
+          return { id: vehicle.id };
+        }),
       },
     },
   });

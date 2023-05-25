@@ -7,3 +7,7 @@ export interface ApplicationForm extends Application {
   zip: string;
   vehicles: string | Vehicle[];
 }
+
+export interface RemoveVehicle extends Vehicle {
+  remove: boolean;
+}
