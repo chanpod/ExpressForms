@@ -80,9 +80,9 @@ export default function ApplicationDetailsPage() {
   const navigate = useNavigate();
   const formRef = useRef();
 
-  useEffect(() => {
-    formRef.current?.reset();
-  }, []);
+  // useEffect(() => {
+  //   formRef.current?.reset();
+  // }, []);
 
   useEffect(() => {
     if(submitter.data && !submitter.data.errors) {
