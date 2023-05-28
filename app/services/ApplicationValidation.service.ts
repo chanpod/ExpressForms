@@ -170,8 +170,11 @@ export class ApplicationValidationService {
       return undefined;
     }
 
-    if ((required && vehicles?.length === 0) || errors.length > 0) {
-      return errors;
+    if ((required && vehicles?.length === 0)) {
+      return "Required"
+    }
+    else if (errors.length > 0) {
+      return errors
     }
   }
   //vin must be 17 long and alphanumeric

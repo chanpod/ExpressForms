@@ -1,11 +1,11 @@
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
-import { getApplications } from "~/models/application.server";
+import { getApplications, getApplicationsRawSql } from "~/models/application.server";
 
 //Loaders are GETs that happen on the server. They are used to fetch data for the page.
 export const loader = async ({ request }: LoaderArgs) => {
-  const applications = await getApplications();
+  const applications = await getApplicationsRawSql();
   return json({ applications });
 };
 
